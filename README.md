@@ -21,4 +21,6 @@ The code is structured in sequential cells which properly do its purposes starti
 17. You can insert a query which will display the tweets relevant information in the order of the ranked documents.
 
 Everything is implemented to being executed cell per cell.
+
+In the Evaluation Part is the same procedure, you must have the documents in the folder of the file to upload it. The rest is set to be executed sequentially, first the queries, then the upload of the file, the evaluation functions and finally there is the T-SNE PLOT, here is probably that the user have to install gensim library.
 That's all, any doubt send a mail to jordi.badia01@estudiant.upf.edu or to nil.agell01@estudiant.upf.edu
