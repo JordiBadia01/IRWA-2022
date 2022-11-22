@@ -23,4 +23,7 @@ The code is structured in sequential cells which properly do its purposes starti
 Everything is implemented to being executed cell per cell.
 
 In the Evaluation Part is the same procedure, you must have the documents in the folder of the file to upload it. The rest is set to be executed sequentially, first the queries, then the upload of the file, the evaluation functions and finally there is the T-SNE PLOT, here is probably that the user have to install gensim library.
+
+In the part 3, we follow the same procedure as the previous parts, we must have the documents inside the same folder as the script. Once all the data is uploaded, it is only necessary to execute cell per cell and once the inverted index is created, then the different ranking functions are executed and post the ranking of the proposed queries.
+
 That's all, any doubt send a mail to jordi.badia01@estudiant.upf.edu or to nil.agell01@estudiant.upf.edu
