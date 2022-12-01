@@ -6,10 +6,12 @@ class Document:
     Original corpus data as an object
     """
 
-    def __init__(self, id, title, description, doc_date, likes, retweets, url, hashtags, link):
+    def __init__(self, id, user, title, description, preprocess, doc_date, likes, retweets, url, hashtags, link):
         self.id = id
+        self.user = user
         self.title = title
         self.description = description
+        self.preprocess = preprocess
         self.doc_date = doc_date
         self.likes = likes
         self.retweets = retweets

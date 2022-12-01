@@ -4,8 +4,10 @@ import pandas as pd
 
 from myapp.core.utils import load_json_file
 from myapp.search.objects import Document
+from myapp.search.algorithms import build_terms
 
 _corpus = {}
+_df = pd.DataFrame()
 
 
 def load_corpus(tweet_path, doc_to_tweet_path) -> [Document]:
@@ -17,8 +19,8 @@ def load_corpus(tweet_path, doc_to_tweet_path) -> [Document]:
     doc_to_tweet_path: path of file of docs to tweets
     :return corpus:
     """
-    df = _load_corpus_as_dataframe(tweet_path, doc_to_tweet_path)
-    df.apply(_row_to_doc_dict, axis=1)
+    _df = _load_corpus_as_dataframe(tweet_path, doc_to_tweet_path)
+    _df.apply(_row_to_doc_dict, axis=1)
     return _corpus
 
 
@@ -29,7 +31,7 @@ def _load_corpus_as_dataframe(tweet_path, doc_to_tweet_path):
     """
     json_data = load_json_file(tweet_path, doc_to_tweet_path)
     tweets_df = _load_tweets_as_dataframe(json_data)
-    _clean_hashtags_and_urls(tweets_df)
+    _clean_items(tweets_df)
     # Rename columns to obtain: Tweet | Username | Date | Hashtags | Likes | Retweets | Url | Language | Link
     corpus = tweets_df.rename(
         columns={"id": "Id", "full_text": "Tweet", "screen_name": "Username",
@@ -37,7 +39,8 @@ def _load_corpus_as_dataframe(tweet_path, doc_to_tweet_path):
                  "retweet_count": "Retweets", "lang": "Language"})
 
     # select only interesting columns
-    filter_columns = ["Id", "Tweet", "Username", "Date", "Hashtags", "Likes", "Retweets", "Url", "Language", "Link"]
+    filter_columns = ["Id", "Tweet", "Preprocess", "Username", "Date", "Hashtags", "Likes", "Retweets", "Url",
+                      "Language", "Link"]
     corpus = corpus[filter_columns]
     return corpus
 
@@ -89,21 +92,30 @@ def _build_url(row):
 def _build_link(row):
     link = ""
     try:
-        link = 'https://twitter.com/' + row['user']['screen_name'] + '/status/' + str(row['id'])  # tweet URL
+        link = 'https://twitter.com/' + row['screen_name'] + '/status/' + row['id_str']  # tweet URL
     except:
         link = ""
     return link
 
 
-def _clean_hashtags_and_urls(df):
+def _clean_items(df):
     df["Hashtags"] = df["hashtags"].apply(_build_hashtags)
     df["Date"] = df["created_at"].apply(_build_date)
     df["Url"] = df.apply(lambda row: _build_url(row), axis=1)
     df["Link"] = df.apply(lambda row: _build_link(row), axis=1)
+    df["Preprocess"] = df["full_text"].apply(build_terms)
     df.drop(columns=["entities"], axis=1, inplace=True)
 
 
 def _row_to_doc_dict(row: pd.Series):
-    _corpus[row['Id']] = Document(row['Id'], row['Tweet'][0:100], row['Tweet'], row['Date'], row['Likes'],
-                                  row['Retweets'],
-                                  row['Url'], row['Hashtags'], row['Link'])
+    _corpus[row.name] = Document(row['Id'],
+                                 row['Username'],
+                                 row['Tweet'][0:80],
+                                 row['Tweet'],
+                                 row['Preprocess'],
+                                 row['Date'],
+                                 row['Likes'],
+                                 row['Retweets'],
+                                 row['Url'],
+                                 row['Hashtags'],
+                                 row['Link'])

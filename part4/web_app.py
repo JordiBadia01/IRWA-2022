@@ -1,9 +1,11 @@
 import os
 from json import JSONEncoder
+import time
 
-#pip install httpagentparser
+# pip install httpagentparser
 import httpagentparser  # for getting the user agent as json
 import nltk
+import numpy as np
 from flask import Flask, render_template, session
 from flask import request
 
@@ -31,12 +33,6 @@ app.secret_key = 'afgsreg86sr897b6st8b76va8er76fcs6g8d7'
 # open browser dev tool to see the cookies
 app.session_cookie_name = 'IRWA_SEARCH_ENGINE'
 
-# instantiate our search engine
-search_engine = SearchEngine()
-
-# instantiate our in memory persistence
-analytics_data = AnalyticsData()
-
 # print("current dir", os.getcwd() + "\n")
 # print("__file__", __file__ + "\n")
 full_path = os.path.realpath(__file__)
@@ -51,6 +47,14 @@ DOCS_PATH = path + '\\data\\tweet_document_ids_map.csv'
 corpus = load_corpus(TWEETS_PATH, DOCS_PATH)
 print("loaded corpus. first elem:", list(corpus.values())[0])
 
+# instantiate our search engine
+start_time = time.time()
+search_engine = SearchEngine(corpus)
+print("Total time to create the TD-IDF index: {} seconds" .format(np.round(time.time() - start_time, 2)))
+
+# instantiate our in memory persistence
+analytics_data = AnalyticsData()
+
 
 # Home URL "/"
 @app.route('/')
@@ -59,7 +63,7 @@ def index():
 
     # flask server creates a session by persisting a cookie in the user's browser.
     # the 'session' object keeps data between multiple requests
-    session['some_var'] = "IRWA 2021 home"
+    session['some_var'] = "IRWA 2022 project"
 
     user_agent = request.headers.get('User-Agent')
     print("Raw user browser:", user_agent)
