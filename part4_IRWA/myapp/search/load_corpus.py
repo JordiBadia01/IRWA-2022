@@ -83,7 +83,7 @@ def _build_hashtags(row):
 def _build_date(row):
     try:
         created_at = datetime.strptime(row, "%a %b %d %X %z %Y")
-        return created_at.strftime('%A %d %B %Y')
+        return created_at.strftime('%A %d %B %Y %R')
     except KeyError:
         return ' '
 
