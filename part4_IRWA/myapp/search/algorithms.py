@@ -144,7 +144,7 @@ def search_in_corpus(corpus, query, index, idf, tf, function='tf_idf', k1=1.4, b
     docs = list(docs)
 
     # if function == 'tf_idf':
-    doc_scores = rank_documents(query, docs, index, idf, tf)
+    doc_scores =  rankTweetsPersonalized(corpus, query, docs, index, idf, tf)
     """elif function == 'personalized':
         ranked_docs, doc_scores = rankTweetsPersonalized(query, docs, index, idf, tf)
     elif function == 'bm25':
@@ -260,15 +260,11 @@ def rankTweetsPersonalized(corpus, terms, docs, index, idf, tf):
 
     for k in docs:
         tweet = corpus[k]
-        query_tweets[tweet["id"]] = tweet
-        likes_count.append(tweet["favorite_count"])
-        retweets_count.append(tweet["retweet_count"])
-        if tweet["user"]["followers_count"] == 0:
-            likesByFollow.append(0)
-            retweetsByFollow.append(0)
-        else:
-            likesByFollow.append(tweet["favorite_count"] / tweet["user"]["followers_count"])
-            retweetsByFollow.append(tweet["retweet_count"] / tweet["user"]["followers_count"])
+        query_tweets[k] = tweet
+        likes_count.append(tweet.likes)
+        retweets_count.append(tweet.retweets)
+        likesByFollow.append(tweet.likes / (tweet.followers+1) )
+        retweetsByFollow.append(tweet.retweets / (tweet.followers+1))
 
     # Normalize the likes and retweets among all the query output tweets
     likes_norm = la.norm(likes_count)
