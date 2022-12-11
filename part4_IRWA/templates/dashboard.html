@@ -78,78 +78,48 @@
     {% endfor %}
 
 
-    <canvas id="dailyVisits2" width="400" height="400"></canvas>
     <script>
-        // another example
-        const data2 = {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        // 'visited_docs' is the data coming from Python code.
+        // load the python list in the JS variable 'visits_list':
+        const visits_list_term = {{ visited_terms | tojson | safe }};
+        console.log("visited terms: ")
+        console.log(visits_list_term)
+    </script>
+
+    <h5>Ranking of Visited Terms</h5>
+    <canvas id="dailyTerms" width="400" height="400"></canvas>
+    <script>
+        // use JS map function top get just the tweet ids as labels
+        const visitsLabels2 = visits_list_term.map(a =>  a[0]);
+        const visitsData2 = visits_list_term.map(a => a[1]);
+        const chartData2 = {
+            labels: visitsLabels2,
             datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
+                label: 'Visits count',
+                data: visitsData2,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
             }]
         };
 
+        const ctx = document.getElementById('dailyTerms').getContext('2d');
+
         // This will render the chart
-        new Chart(document.getElementById("dailyVisits2"), {
-            type: 'bar',
-            data: {
-                labels: myLabels,
-                datasets: [{
-                    data: [1, 2, 3],
-                    label: "Alberta",
-                    borderColor: "#3e95cd",
-                    fill: false
-                }, {
-                    data: [1, 2, 3],
-                    label: "BC",
-                    borderColor: "#8e5ea2",
-                    fill: false
-                }, {
-                    data: [1, 2, 3],
-                    label: "Manitoba",
-                    borderColor: "#3cba9f",
-                    fill: false
-                }, {
-                    data: [1, 2, 3],
-                    label: "New Brunswick",
-                    borderColor: "#e8c3b9",
-                    fill: false
-                }, {
-                    data: [1, 2, 3],
-                    label: "NL",
-                    borderColor: "#c45850",
-                    fill: false
-                }
-                ]
-            },
+        const myChart2 = new Chart(ctx, {
+            type: 'line',
+            data: chartData2,
             options: {
-                title: {
-                    display: true,
-                    text: 'Some title'
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: true
-                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
             }
         });
+
     </script>
+
+
 
 {% endblock %}
